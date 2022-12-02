@@ -1,6 +1,6 @@
 const Footer = () =>
-    <footer>
-        <p>
+    <footer className='px-20 pb-20'>
+        <p className='pb-4'>
             By <a href="https://orderandchaos.xyz">orderandchaos</a><br/>
             <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -25,7 +25,7 @@ const Footer = () =>
                     <title>Order &amp; Chaos</title>
                     <g
                         id="logo/on-white"
-                        stroke="none"
+                g        stroke="none"
                         strokeWidth="1"
                         fill="none"
                         fillRule="evenodd"
