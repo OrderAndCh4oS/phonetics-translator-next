@@ -41,7 +41,7 @@ export default function Home() {
                 <textarea
                     id="input"
                     onChange={handleChange}
-                    className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                    className="min-h-[260px] block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Enter text to translate"
                 />
                 <div className="my-10">
@@ -53,7 +53,7 @@ export default function Home() {
                             <textarea
                                 value={data.translation}
                                 readOnly
-                                className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 outline-none focus:outline-none"
+                                className="min-h-[260px] block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 outline-none focus:outline-none"
                             />
                         </>
                     )}
