@@ -1,0 +1,9 @@
+POST http://localhost:3000/api/phonetic-translator
+Content-Type: application/json
+
+{
+  "languageCode": "en_UK",
+  "text": "hello there"
+}
+
+###
