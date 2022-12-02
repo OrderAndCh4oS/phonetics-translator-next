@@ -1,6 +1,6 @@
 const Footer = () =>
-    <footer className='px-20 pb-20'>
-        <p className='pb-4'>
+    <footer>
+        <p>
             By <a href="https://orderandchaos.xyz">orderandchaos</a><br/>
             <svg
                 xmlns="http://www.w3.org/2000/svg"
