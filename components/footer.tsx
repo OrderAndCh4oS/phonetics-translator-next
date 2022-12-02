@@ -25,7 +25,7 @@ const Footer = () =>
                     <title>Order &amp; Chaos</title>
                     <g
                         id="logo/on-white"
-                g        stroke="none"
+                        stroke="none"
                         strokeWidth="1"
                         fill="none"
                         fillRule="evenodd"
