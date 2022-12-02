@@ -7,20 +7,25 @@ import fetchPhoneticTranslation from '../requests/fetch-phonetic-translation';
 export default function Home() {
     let timer;
     const [text, setText] = useState('');
+    const [languageCode, setLanguageCode] = useState('en_UK');
 
-    const {data, isError, error, isFetching, isSuccess} = useQuery({
-        queryKey: ['translation', text],
-        queryFn: () => fetchPhoneticTranslation('en_UK', text),
+    const {data, isError, error, isSuccess} = useQuery({
+        queryKey: ['translation', text, languageCode],
+        queryFn: () => fetchPhoneticTranslation(languageCode, text),
         initialData: {translation: ''}
     });
 
-    const handleChange = (event) => {
+    const handleInput = (event) => {
         clearTimeout(timer);
         timer = setTimeout(() => {
             const newText = event.target.value;
-            console.log(newText);
             setText(newText);
         }, 400);
+    };
+
+    const handleSelect = (event) => {
+        console.log(event.target.value);
+        setLanguageCode(event.target.value);
     };
 
     return (
@@ -35,12 +40,36 @@ export default function Home() {
             </Head>
             <main className="px-20 py-10 max-w-[80ch]">
                 <label
+                    htmlFor="countries"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >Select an option</label>
+                <select
+                    onChange={handleSelect}
+                    id="countries"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                >
+                    <option value='en_UK' selected>English</option>
+                    <option value="de">German</option>
+                    <option value="fr_FR">French</option>
+                    <option value="es_ES">Spanish</option>
+                    <option value="sv">Swedish</option>
+                    <option value="it">Italian</option>
+                    <option value="da">Danish</option>
+                    <option value="fi">Finnish</option>
+                    <option value="hu">Hungarian</option>
+                    <option value="is">Icelandic</option>
+                    <option value="el">Greek</option>
+                    <option value="ru">Russian</option>
+                    <option value="yi">Yiddish</option>
+                    <option value="la">Latin</option>
+                </select>
+                <label
                     htmlFor="input"
                     className="block mb-2 text-sm font-medium text-gray-900"
                 >Input</label>
                 <textarea
                     id="input"
-                    onChange={handleChange}
+                    onChange={handleInput}
                     className="min-h-[260px] block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Enter text to translate"
                 />
