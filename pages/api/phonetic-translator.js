@@ -398,12 +398,13 @@ export default async function handler(req, res) {
     }
     const errors = [];
     if(!req.body.languageCode) errors.push({languageCode: 'Missing field'});
+    // Todo: ensure languageCode is valid.
     if(!req.body.text) errors.push({text: 'Missing field'});
+    if(!req.body.text.length) return res.status(200).json({translation: ''});
 
     if(errors.length) return res.status(400).json(errors);
 
-    console.log(req.body)
-    const result = translate(req.body.languageCode, req.body.text);
+    const translation = translate(req.body.languageCode, req.body.text);
 
-    res.status(200).json(result);
+    res.status(200).json({translation});
 }
