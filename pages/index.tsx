@@ -1,10 +1,15 @@
 import Head from 'next/head';
-import {useQuery} from '@tanstack/react-query';
+import {useMutation, useQuery} from '@tanstack/react-query';
 import Footer from '../components/footer';
-import {FC, useState} from 'react';
+import {FC, useEffect, useState} from 'react';
 import fetchPhoneticTranslation from '../requests/fetch-phonetic-translation';
+import getTranslationWithMlReplacements from "../utilities/get-ml-translation";
 
-const SelectWord: FC<{ wordSet: string[], wordId: string }> = ({wordSet, wordId}) => {
+const SelectWord: FC<{ wordSet: string[], wordId: string, colour: string }> = ({
+                                                                                   wordSet,
+                                                                                   wordId,
+                                                                                   colour
+                                                                               }) => {
     const [selectedWordIndex, setSelectedWordIndex] = useState(0)
     const [showWordChoices, setShowWordChoices] = useState(false)
 
@@ -19,10 +24,11 @@ const SelectWord: FC<{ wordSet: string[], wordId: string }> = ({wordSet, wordId}
 
     return (
         <div className='inline relative'>
-            <button onClick={toggleWordChoices} className='text-blue-600'>{wordSet[selectedWordIndex]}</button>
+            <button onClick={toggleWordChoices}
+                    className={colour}>{wordSet[selectedWordIndex]}</button>
             {showWordChoices
                 ? (
-                    <div className='absolute w-auto top-5 left-0 bg-gray-200 shadow'>
+                    <div className='absolute w-auto top-5 left-0 bg-gray-200 shadow z-10'>
                         {wordSet.map((word, i) =>
                             <button
                                 key={`${wordId}_${word}`}
@@ -39,6 +45,7 @@ const SelectWord: FC<{ wordSet: string[], wordId: string }> = ({wordSet, wordId}
     );
 };
 
+
 const Home = () => {
     let timer;
     const [text, setText] = useState('');
@@ -49,6 +56,10 @@ const Home = () => {
         queryFn: () => fetchPhoneticTranslation(languageCode, text),
         initialData: {translation: []}
     });
+
+    const mutation = useMutation({
+        mutationFn: (translation: string[][]) => getTranslationWithMlReplacements(translation),
+    })
 
     const handleInput = (event) => {
         clearTimeout(timer);
@@ -61,6 +72,11 @@ const Home = () => {
     const handleSelect = (event) => {
         setLanguageCode(event.target.value);
     };
+
+    useEffect(() => {
+        if (languageCode !== 'en_UK' || !data.translation || !data.translation.length) return;
+        mutation.mutate(data.translation);
+    }, [data, languageCode]);
 
     return (
         <div className="flex flex-col h-full">
@@ -122,12 +138,47 @@ const Home = () => {
                             className="min-h-[260px] block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 outline-none focus:outline-none"
                         >
                             {isSuccess ? (data?.translation).map(
-                                (wordSet, i) => (wordSet.length === 1
-                                        ? <span key={`w_${i}`}>{wordSet}</span>
-                                        : <SelectWord wordSet={wordSet} wordId={`w_${i}`} key={`w_${i}`}/>
-                                )) : null}
+                                (wordSet, i) => {
+                                    const lastWord = wordSet.at(-1);
+                                    const isNonMatched = lastWord[0] === '#' && lastWord.at(-1) === '#';
+                                    const isAiTransliteration = isNonMatched && wordSet.length > 1;
+                                    const colour = isAiTransliteration
+                                        ? 'text-green-600'
+                                        : isNonMatched
+                                            ? 'text-red-600'
+                                            : wordSet.length > 1
+                                                ? 'text-blue-600'
+                                                : '';
+                                    return (wordSet.length === 1
+                                            ? <span key={`w_${i}`} className={colour}>{wordSet}</span>
+                                            : <SelectWord
+                                                key={`w_${i}`}
+                                                wordId={`w_${i}`}
+                                                wordSet={wordSet}
+                                                colour={colour}
+                                            />
+                                    );
+                                }) : null}
                         </div>
                     </>
+                </div>
+                <div className={'my-10'}>
+                    <h3 className='font-bold'>Key</h3>
+                    <ul>
+                        <li>
+                            <span className='text-blue-400'>Blue</span> highlighted text has alternate pronunciations,
+                            click on the text to view and select them.
+                        </li>
+                        <li>
+                            <span className='text-red-400'>Red</span> highlighted text has been transliterated using
+                            phoneme rules, if available in that language
+                        </li>
+                        <li>
+                            <span className='text-green-400'>Green</span> highlighted text has no dictionary look up and
+                            has
+                            used a machine learning model to generate the transliteration.
+                        </li>
+                    </ul>
                 </div>
             </main>
             <Footer/>

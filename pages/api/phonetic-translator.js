@@ -356,7 +356,6 @@ class RuleProcessor {
 
     loadRuleFile(languageCode, type) {
         const response = loadFile(`processors/rules/${type}s/${languageCode}.txt`);
-        console.log('Res', response);
         if(!response) return;
         const charGroupRegex = /^::\p{L}+?::\s+?=\s+?[\p{L}|]+/gmu;
         const ruleRegex = /^[\p{L}\[\]|]+?\s+->\s+[\p{L}\p{M}\[\]<>|0]+\s+\/\s+.*?$/gmu;
