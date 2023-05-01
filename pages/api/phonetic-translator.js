@@ -219,7 +219,7 @@ class TrieWordStepper extends TrieStepperAbstract {
                                 this._currentWord);
                             this._orthographyStepper.clear();
                         }
-                        this._result.push('#' + this._currentWord + '#');
+                        this._result.push('#' + this._currentWord.trim() + '#');
                         this._currentWord = '';
                     }
                 }
