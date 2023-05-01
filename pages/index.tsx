@@ -1,17 +1,21 @@
 import Head from 'next/head';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import Footer from '../components/footer';
-import {FC, useEffect, useState} from 'react';
+import {FC, useEffect, useRef, useState} from 'react';
 import fetchPhoneticTranslation from '../requests/fetch-phonetic-translation';
 import getTranslationWithMlReplacements from "../utilities/get-ml-translation";
+import useOnClickOutside from "../hooks/use-on-click-outside";
 
-const SelectWord: FC<{ wordSet: string[], wordId: string, colour: string }> = ({
-                                                                                   wordSet,
-                                                                                   wordId,
-                                                                                   colour
-                                                                               }) => {
+const SelectWord: FC<{ wordSet: string[], wordId: string, colour: string }> = (
+    {
+        wordSet,
+        wordId,
+        colour
+    }
+) => {
     const [selectedWordIndex, setSelectedWordIndex] = useState(0)
     const [showWordChoices, setShowWordChoices] = useState(false)
+    const ref = useRef(null)
 
     const toggleWordChoices = () => {
         setShowWordChoices(prevState => !prevState);
@@ -22,8 +26,14 @@ const SelectWord: FC<{ wordSet: string[], wordId: string, colour: string }> = ({
         setShowWordChoices(false);
     };
 
+    const handleClickOutside = () => {
+        setShowWordChoices(false);
+    };
+
+    useOnClickOutside(ref, handleClickOutside)
+
     return (
-        <div className='inline relative'>
+        <div className='inline relative' ref={ref}>
             <button onClick={toggleWordChoices}
                     className={colour}>{wordSet[selectedWordIndex]}</button>
             {showWordChoices
