@@ -2566,6 +2566,7 @@ ardor	/ˈɑːdɔː/	ipa
 ardour	/ˈɑːdɐ/	ipa
 arduous	/ˈɑːdjuːəs/	ipa
 arduously	/ˈɑːdjuːəsli/	ipa
+are	/ɑːr/	found
 area	/ˈe‍əɹi‍ə/	ipa
 areal	/ˈe‍əɹi‍əl/	ipa
 areas	/ˈe‍əɹi‍əz/	ipa
@@ -22065,6 +22066,7 @@ flout	/flˈa‍ʊt/	ipa
 flouting	/flˈa‍ʊtɪŋ/	ipa
 flowchart	/flˈə‍ʊt‍ʃɑːt/	ipa
 flowed	/flˈə‍ʊd/	ipa
+flower	/flˈa‍ʊə/	found
 flowerbed	/flˈa‍ʊəbˌɛd/	ipa
 flowerbeds	/flˈa‍ʊəbˌɛdz/	ipa
 flowered	/flˈa‍ʊəd/	ipa
@@ -31504,6 +31506,7 @@ kisser	/kˈɪsɐ/	ipa
 kissers	/kˈɪsəz/	ipa
 kisses	/kˈɪsɪz/	ipa
 kissing	/kˈɪsɪŋ/	ipa
+kissings	/kˈɪsɪŋz/	found
 kiss	/kˈɪs/	ipa
 kissogram	/kˈɪsəɡɹˌæm/	ipa
 kist	/kˈɪst/	ipa
@@ -37901,6 +37904,7 @@ nitwit	/nˈɪtwɪt/	ipa
 nitwits	/nˈɪtwɪts/	ipa
 nixed	/nˈɪkst/	ipa
 nix	/nˈɪks/	ipa
+no	/nəʊ/	found
 nobbled	/nˈɒbə‍ld/	ipa
 nobble	/nˈɒbə‍l/	ipa
 nobbles	/nˈɒbə‍lz/	ipa
@@ -48467,6 +48471,7 @@ rivals	/ɹˈa‍ɪvə‍lz/	ipa
 rive	/ɹˈa‍ɪv/	ipa
 rived	/ɹˈa‍ɪvd/	ipa
 riven	/ɹˈɪvən/	ipa
+river	/ɹˈɪvə/	found
 riverbanks	/ɹˈɪvəbˌæŋks/	ipa
 riverbank	/ɹˈɪvəbˌæŋk/	ipa
 riverbeds	/ɹˈɪvəbˌɛdz/	ipa
@@ -58028,6 +58033,7 @@ thoroughness	/θˈʌɹənəs/	ipa
 thorough	/θˈʌɹɐ/	ipa
 thorp	/θˈɔːp/	ipa
 those	/ðˈə‍ʊz/	ipa
+thou	/ðaʊ/	found
 though	/ðˈə‍ʊ/	ipa
 thoughtfully	/θˈɔːtfəli/	ipa
 thoughtfulness	/θˈɔːtfə‍lnəs/	ipa
@@ -64139,6 +64145,10 @@ winching	/wˈɪnt‍ʃɪŋ/	ipa
 winch	/wˈɪnt‍ʃ/	ipa
 wincing	/wˈɪnsɪŋ/	ipa
 windage	/wˈɪndɪd‍ʒ/	ipa
+wind	/wˈɪnd/	found
+wind	/wˈa‍ɪnd/	found
+winds	/wˈɪndz/	found
+winds	/wˈa‍ɪndz/	found
 windbags	/wˈɪndbæɡz/	ipa
 windbag	/wˈɪndbæɡ/	ipa
 windblown	/wˈɪndblə‍ʊn/	ipa
