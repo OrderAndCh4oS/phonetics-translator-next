@@ -1,8 +1,43 @@
 import Head from 'next/head';
 import {useQuery} from '@tanstack/react-query';
 import Footer from '../components/footer';
-import {useState} from 'react';
+import {FC, useState} from 'react';
 import fetchPhoneticTranslation from '../requests/fetch-phonetic-translation';
+
+const SelectWord: FC<{ wordSet: string[], wordId: string }> = ({wordSet, wordId}) => {
+    const [selectedWordIndex, setSelectedWordIndex] = useState(0)
+    const [showWordChoices, setShowWordChoices] = useState(false)
+
+    const toggleWordChoices = () => {
+        setShowWordChoices(prevState => !prevState);
+    };
+
+    const handleSelectWord = (i: number) => () => {
+        setSelectedWordIndex(i);
+        setShowWordChoices(false);
+    };
+
+    return (
+        <div className='inline relative'>
+            <button onClick={toggleWordChoices} className='text-blue-600'>{wordSet[selectedWordIndex]}</button>
+            {showWordChoices
+                ? (
+                    <div className='absolute w-auto top-5 left-0 bg-gray-200 shadow'>
+                        {wordSet.map((word, i) =>
+                            <button
+                                key={`${wordId}_${word}`}
+                                onClick={handleSelectWord(i)}
+                                className='whitespace-nowrap bg-gray-200 block w-auto min-w-full p-1 border-b border-b-gray-300 hover:bg-gray-400 last-of-type:border-0'
+                            >
+                                {word}
+                            </button>
+                        )}
+                    </div>
+                )
+                : null}
+        </div>
+    );
+};
 
 const Home = () => {
     let timer;
@@ -12,7 +47,7 @@ const Home = () => {
     const {data, isError, error, isSuccess} = useQuery({
         queryKey: ['translation', text, languageCode],
         queryFn: () => fetchPhoneticTranslation(languageCode, text),
-        initialData: {translation: ''}
+        initialData: {translation: []}
     });
 
     const handleInput = (event) => {
@@ -46,10 +81,11 @@ const Home = () => {
                     >Select a Language</label>
                     <select
                         onChange={handleSelect}
+                        defaultValue='en_UK'
                         id="countries"
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     >
-                        <option value="en_UK" selected>English</option>
+                        <option value="en_UK">English</option>
                         <option value="de">German</option>
                         <option value="fr_FR">French</option>
                         <option value="es_ES">Spanish</option>
@@ -78,19 +114,20 @@ const Home = () => {
                     />
                 </div>
                 <div className="my-10">
-                    {isSuccess && (
-                        <>
-                            <label
-                                className="block mb-2 text-sm font-medium text-gray-900"
-                            >Output</label>
-                            <textarea
-                                value={data.translation}
-                                readOnly
-                                className="min-h-[260px] block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 outline-none focus:outline-none"
-                            />
-                        </>
-                    )}
-                    {isError && <p>{error as string}</p>}
+                    <>
+                        <label
+                            className="block mb-2 text-sm font-medium text-gray-900"
+                        >Output</label>
+                        <div
+                            className="min-h-[260px] block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 outline-none focus:outline-none"
+                        >
+                            {isSuccess ? (data?.translation).map(
+                                (wordSet, i) => (wordSet.length === 1
+                                        ? <span key={`w_${i}`}>{wordSet}</span>
+                                        : <SelectWord wordSet={wordSet} wordId={`w_${i}`} key={`w_${i}`}/>
+                                )) : null}
+                        </div>
+                    </>
                 </div>
             </main>
             <Footer/>

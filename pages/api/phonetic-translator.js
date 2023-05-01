@@ -132,9 +132,9 @@ class TrieStepperAbstract extends Trie {
     get result() {
         return this._result.map(r =>
             r instanceof CharNode
-                ? [...r.phonetics][0]
-                : r,
-        ).join('');
+                ? [...r.phonetics]
+                : [r],
+        );
     }
 
     get resultRaw() {
@@ -154,8 +154,7 @@ class TrieStepperAbstract extends Trie {
         if(typeof text !== 'string') throw new Error('Text must be a string');
         this._text = ' ' + text.toLowerCase() + ' '; // Todo: remove need for spaces;
         this.run();
-        const result = this.result;
-        return result.trim();
+        return this.result;
     }
 
     reset() {
@@ -265,13 +264,15 @@ class TrieOrthographyStepper extends TrieStepperAbstract {
         return result;
     }
 
-    addRulePreprocessorForLanguage(ruleProcessor, languageCode) {
+    addRulePreprocessorForLanguage(languageCode) {
+        const ruleProcessor = new RuleProcessor();
         ruleProcessor.loadRuleFile(languageCode, 'preprocessor');
         this._rulePreprocessors[languageCode] = ruleProcessor;
     }
 
-    addRulePostprocessorForLanguage(ruleProcessor, languageCode) {
-        ruleProcessor.loadRuleFile(languageCode, 'postprocessor');
+    addRulePostprocessorForLanguage(languageCode) {
+        const ruleProcessor = new RuleProcessor();
+        ruleProcessor.loadRuleFile(languageCode, 'preprocessor');
         this._rulePostprocessors[languageCode] = ruleProcessor;
     }
 
@@ -383,8 +384,8 @@ const trieOrthography = new TrieOrthographyStepper();
 function translate(language, text) {
     trieWord.loadDictionary(language);
     trieOrthography.loadDictionary(language);
-    trieOrthography.addRulePreprocessorForLanguage(new RuleProcessor(), language);
-    trieOrthography.addRulePostprocessorForLanguage(new RuleProcessor(), language);
+    trieOrthography.addRulePreprocessorForLanguage(language);
+    trieOrthography.addRulePostprocessorForLanguage(language);
     trieWord.addOrthographyStepper(trieOrthography);
     const result = trieWord.translateText(text);
     trieWord.clear();
@@ -399,10 +400,10 @@ export default async function handler(req, res) {
     const errors = [];
     if(!req.body.languageCode) errors.push({languageCode: 'Missing field'});
     // Todo: ensure languageCode is valid.
-    if(!req.body.text) errors.push({text: 'Missing field'});
-    if(!req.body.text.length) return res.status(200).json({translation: ''});
 
+    if(!req.body.text) errors.push({text: 'Missing field'});
     if(errors.length) return res.status(400).json(errors);
+    if(!req.body.text.length) return res.status(200).json({translation: []});
 
     const translation = translate(req.body.languageCode, req.body.text);
 
