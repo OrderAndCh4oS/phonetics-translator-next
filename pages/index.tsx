@@ -170,13 +170,13 @@ const Home = () => {
                             click on the text to view and select them.
                         </li>
                         <li>
-                            <span className='text-red-400'>Red</span> highlighted text has no dictionary look and may
+                            <span className='text-red-400'>Red</span> highlighted text has no dictionary look up and may
                             have been transliterated using phoneme rules, provided such rules are available for the
                             particular language.
                         </li>
                         <li>
                             <span className='text-green-400'>Green</span> highlighted text has no dictionary look up and
-                            has used a machine learning model to generate the transliteration.
+                            has used a machine learning model to generate the transliteration, results may vary.
                         </li>
                     </ul>
                 </div>
