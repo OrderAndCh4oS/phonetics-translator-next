@@ -90,7 +90,7 @@ const Home = () => {
             </Head>
             <main className="px-20 py-10 max-w-[80ch]">
                 <h1 className='text-2xl'>Phonetic Translator</h1>
-                <div className="my-10">
+                <div className="my-4">
                     <label
                         htmlFor="countries"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -117,7 +117,7 @@ const Home = () => {
                         <option value="la">Latin</option>
                     </select>
                 </div>
-                <div className="my-10">
+                <div className="my-4">
                     <label
                         htmlFor="input"
                         className="block mb-2 text-sm font-medium text-gray-900"
@@ -129,7 +129,7 @@ const Home = () => {
                         placeholder="Enter text to translate"
                     />
                 </div>
-                <div className="my-10">
+                <div className="my-4">
                     <>
                         <label
                             className="block mb-2 text-sm font-medium text-gray-900"
