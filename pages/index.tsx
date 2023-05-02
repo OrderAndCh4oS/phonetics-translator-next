@@ -44,13 +44,9 @@ const Home = () => {
 
     const {data, isError, error, isSuccess} = useQuery({
         queryKey: ['translation', text, languageCode],
-        queryFn: () => fetchPhoneticTranslation(languageCode, text),
+        queryFn: ({signal}) => fetchPhoneticTranslation(signal, languageCode, text),
         initialData: {translation: []}
     });
-
-    const mutation = useMutation({
-        mutationFn: (translation: Transliteration) => getTranslationWithMlReplacements(languageCode, translation),
-    })
 
     const handleInput = (event) => {
         clearTimeout(timer);
@@ -63,15 +59,6 @@ const Home = () => {
     const handleSelect = (event) => {
         setLanguageCode(event.target.value);
     };
-
-    useEffect(() => {
-        if (
-            !["de", "en_UK", "fr_FR"].includes(languageCode) ||
-            !data.translation ||
-            !data.translation.length
-        ) return;
-        mutation.mutate(data.translation);
-    }, [data, languageCode]);
 
     return (
         <div className="flex flex-col h-full">

@@ -1,13 +1,13 @@
 import fetchPhoneticTranslationMl from "../requests/fetch-phonetic-translation-ml";
 import {Transliteration} from "../requests/fetch-phonetic-translation";
 
-const getTranslationWithMlReplacements = async (languageCode: string, translation: Transliteration) => {
+const getTranslationWithMlReplacements = async (signal: AbortSignal, languageCode: string, translation: Transliteration) => {
     const text = translation.reduce((arr, x) => {
         return x.type === 'rule' ? [...arr, x.word] : arr
     }, []).join(' ')
 
     try {
-        const res = await fetchPhoneticTranslationMl(languageCode, text)
+        const res = await fetchPhoneticTranslationMl(signal, languageCode, text)
         const ipaArr = res.ipa.split(' ');
         if (res) {
             let i = 0;
