@@ -1,7 +1,7 @@
 IPA Transliterator NextJS
 ===================
 
-This project provides a web-based UI for IPA transliteration of text input. It uses the IPA Transliterator script, which is built on top of a Trie-based transliteration engine and includes support for multiple languages.
+This project provides a web-based UI for IPA phonetics of text input. It uses the IPA Transliterator script, which is built on top of a Trie-based phonetics engine and includes support for multiple languages.
 
 It uses my scripts from [Phonetics Transliterator](https://github.com/OrderAndCh4oS/phonetics-transliterator)
 

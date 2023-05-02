@@ -1,11 +1,10 @@
 import axios from 'axios';
 
-const fetchPhoneticTranslationMl = async (text) => {
+const fetchPhoneticTranslationMl = async (languageCode: string, text: string): Promise<{ ipa: string }> => {
     const response = await axios.post(
         `${process.env.NEXT_PUBLIC_TRANSLITERATOR_ML_API}`,
-        {text}
+        {text, language_code: languageCode}
     );
-    // Todo: handle errors
 
     return response.data;
 }

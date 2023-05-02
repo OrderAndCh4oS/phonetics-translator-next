@@ -12,18 +12,13 @@ function loadFile(file) {
     }
 }
 
-class CharNode {
-    _char;
+class BaseNode {
     _phonetics = new Set();
     _word = null;
-    _nextCharsLevel = {};
+    _type = 'rule';
 
-    constructor(char) {
-        this._char = char;
-    }
-
-    get char() {
-        return this._char;
+    get type() {
+        return this._type;
     }
 
     get phonetics() {
@@ -32,10 +27,6 @@ class CharNode {
 
     get word() {
         return this._word;
-    }
-
-    get nextCharsLevel() {
-        return this._nextCharsLevel;
     }
 
     addPhonetic(phonetic) {
@@ -47,57 +38,56 @@ class CharNode {
     }
 }
 
+class LookUpNode extends BaseNode {
+    _char;
+    _nextLevel = {};
+    _type = 'lookup';
+
+    constructor(char) {
+        super()
+        this._char = char;
+    }
+
+    get char() {
+        return this._char;
+    }
+
+    get nextLevel() {
+        return this._nextLevel;
+    }
+}
+
 class Trie {
     _currentLanguageCode = null;
     _loadedDictionaries = {};
 
     constructor() { }
 
-    get firstCharsLevel() {
+    get firstLevel() {
         return this._loadedDictionaries[this._currentLanguageCode];
     }
 
     addWord(word, phonetic) {
         const charsArr = word.split('');
-        let currentCharLevel = this.firstCharsLevel;
-        let currentCharNode;
+        let currentLevel = this.firstLevel;
+        let currentNode;
         let currentChar;
         do {
             currentChar = charsArr.shift();
-            if(currentChar in currentCharLevel) {
-                currentCharNode = currentCharLevel[currentChar];
-                currentCharLevel = currentCharLevel[currentChar].nextCharsLevel;
+            if(currentChar in currentLevel) {
+                currentNode = currentLevel[currentChar];
+                currentLevel = currentLevel[currentChar].nextLevel;
                 continue;
             }
-            currentCharLevel[currentChar] = new CharNode(currentChar);
-            currentCharNode = currentCharLevel[currentChar];
-            currentCharLevel = currentCharLevel[currentChar].nextCharsLevel;
+            currentLevel[currentChar] = new LookUpNode(currentChar);
+            currentNode = currentLevel[currentChar];
+            currentLevel = currentLevel[currentChar].nextLevel;
         } while(charsArr.length);
         const phoneticOptions = phonetic.split(', ');
         for(const phoneticOption of phoneticOptions) {
-            currentCharNode.addPhonetic(phoneticOption);
+            currentNode.addPhonetic(phoneticOption);
         }
-        currentCharNode.setWord(word);
-    }
-
-    findCharNode(word) {
-        const charsArr = word.split('');
-        let currentCharLevel = this.firstCharsLevel;
-        let currentChar;
-        let currentCharNode;
-        do {
-            currentChar = charsArr.shift();
-            if(!(currentChar in currentCharLevel)) return null;
-            currentCharNode = currentCharLevel[currentChar];
-            if(!charsArr.length) return currentCharNode;
-            currentCharLevel = currentCharNode.nextCharsLevel;
-        } while(charsArr.length);
-        return null;
-    }
-
-    findPhonetics(word) {
-        const result = this.findCharNode(word);
-        return result ? result.phonetics : null;
+        currentNode.setWord(word);
     }
 
     hasDictionary(dictionary) {
@@ -114,7 +104,6 @@ class TrieStepperAbstract extends Trie {
     _cursor = 0;
     _result = [];
     _text = null;
-    _prosody = 85;
 
     constructor() {
         super();
@@ -124,24 +113,11 @@ class TrieStepperAbstract extends Trie {
         return this._cursor;
     }
 
-    get lastPhoneticsSet() {
-        if(!this._lastNodeWithResult) return null;
-        return this._lastNodeWithResult.phonetics;
-    }
-
     get result() {
         return this._result.map(r =>
-            r instanceof CharNode
-                ? [...r.phonetics]
-                : [r],
-        );
-    }
-
-    get resultRaw() {
-        return this._result.map(
-            r => r instanceof CharNode
-                ? {phonetics: [...r.phonetics], word: r.word}
-                : {char: r},
+            r instanceof BaseNode
+                ? {phonetics: [...r.phonetics], word: r.word, type: r.type}
+                : {char: r, type: 'char'},
         );
     }
 
@@ -158,13 +134,13 @@ class TrieStepperAbstract extends Trie {
     }
 
     reset() {
-        this._currentLevel = this.firstCharsLevel;
+        this._currentLevel = this.firstLevel;
         this._lastNodeWithResult = null;
         this._foundChars = false;
     }
 
     clear() {
-        this._currentLevel = this.firstCharsLevel;
+        this._currentLevel = this.firstLevel;
         this._lastNodeWithResult = null;
         this._lastResultCursor = null;
         this._currentNode = null;
@@ -187,14 +163,14 @@ class TrieWordStepper extends TrieStepperAbstract {
 
     run() {
         if(typeof this._text !== 'string') throw new Error('Set some text before running');
-        this._currentLevel = this.firstCharsLevel;
+        this._currentLevel = this.firstLevel;
         while(this._cursor < this._text.length) {
             const char = this._text[this._cursor];
             if(char in this._currentLevel &&
                 (this._foundChars || !this.isLetter(this._text[this._cursor - 1]))) {
                 this._foundChars = true;
                 this._currentNode = this._currentLevel[char];
-                this._currentLevel = this._currentNode.nextCharsLevel;
+                this._currentLevel = this._currentNode.nextLevel;
                 if(this._currentNode.word && !this.isLetter(this._text[this._cursor + 1])) {
                     this._lastNodeWithResult = this._currentNode;
                     this._lastResultCursor = this._cursor;
@@ -214,12 +190,16 @@ class TrieWordStepper extends TrieStepperAbstract {
                     }
                     this._currentWord += char;
                     if(!this.isLetter(this._text[i + 1])) {
+                        let phonetic = '';
                         if(this._orthographyStepper) {
-                            this._currentWord = this._orthographyStepper.translateText(
-                                this._currentWord);
+                            phonetic = this._orthographyStepper
+                                .translateText(this._currentWord);
                             this._orthographyStepper.clear();
                         }
-                        this._result.push('#' + this._currentWord.trim() + '#');
+                        const node = new BaseNode();
+                        node.setWord(this._currentWord.trim())
+                        node.addPhonetic('#' + phonetic.trim() + '#')
+                        this._result.push(node);
                         this._currentWord = '';
                     }
                 }
@@ -254,7 +234,7 @@ class TrieOrthographyStepper extends TrieStepperAbstract {
 
     get result() {
         let result = this._result.map(r =>
-            r instanceof CharNode
+            r instanceof LookUpNode
                 ? [...r.phonetics][0]
                 : r,
         ).join('');
@@ -281,12 +261,12 @@ class TrieOrthographyStepper extends TrieStepperAbstract {
         if(this._currentLanguageCode in this._rulePreprocessors) {
             this._text = this._rulePreprocessors[this._currentLanguageCode].process(this._text);
         }
-        this._currentLevel = this.firstCharsLevel;
+        this._currentLevel = this.firstLevel;
         while(this._cursor < this._text.length) {
             const char = this._text[this._cursor];
             if(char in this._currentLevel) {
                 this._currentNode = this._currentLevel[char];
-                this._currentLevel = this._currentNode.nextCharsLevel;
+                this._currentLevel = this._currentNode.nextLevel;
                 if(this._currentNode.word) {
                     this._lastNodeWithResult = this._currentNode;
                     this._lastResultCursor = this._cursor;
@@ -403,7 +383,7 @@ export default async function handler(req, res) {
 
     if(!req.body.text) errors.push({text: 'Missing field'});
     if(errors.length) return res.status(400).json(errors);
-    if(!req.body.text.length) return res.status(200).json({translation: []});
+    if(!req.body.text.length) return res.status(200).json({transliteration: []});
 
     const translation = translate(req.body.languageCode, req.body.text);
 

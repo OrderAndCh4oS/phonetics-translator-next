@@ -1,60 +1,41 @@
 import Head from 'next/head';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import Footer from '../components/footer';
-import {FC, useEffect, useRef, useState} from 'react';
-import fetchPhoneticTranslation from '../requests/fetch-phonetic-translation';
+import React, {FC, useEffect, useState} from 'react';
+import fetchPhoneticTranslation, {Transliteration} from '../requests/fetch-phonetic-translation';
 import getTranslationWithMlReplacements from "../utilities/get-ml-translation";
-import useOnClickOutside from "../hooks/use-on-click-outside";
+import TransliteratorKey from "../components/tranliterator-key";
+import SelectWord from "../components/select-word";
 
-const SelectWord: FC<{ wordSet: string[], wordId: string, colour: string }> = (
-    {
-        wordSet,
-        wordId,
-        colour
-    }
-) => {
-    const [selectedWordIndex, setSelectedWordIndex] = useState(0)
-    const [showWordChoices, setShowWordChoices] = useState(false)
-    const ref = useRef(null)
-
-    const toggleWordChoices = () => {
-        setShowWordChoices(prevState => !prevState);
-    };
-
-    const handleSelectWord = (i: number) => () => {
-        setSelectedWordIndex(i);
-        setShowWordChoices(false);
-    };
-
-    const handleClickOutside = () => {
-        setShowWordChoices(false);
-    };
-
-    useOnClickOutside(ref, handleClickOutside)
-
-    return (
-        <div className='inline relative' ref={ref}>
-            <button onClick={toggleWordChoices}
-                    className={`${colour} font-bold`}>{wordSet[selectedWordIndex]}</button>
-            {showWordChoices
-                ? (
-                    <div className='absolute w-auto top-5 left-0 bg-gray-200 shadow z-10'>
-                        {wordSet.map((word, i) =>
-                            <button
-                                key={`${wordId}_${word}`}
-                                onClick={handleSelectWord(i)}
-                                className='whitespace-nowrap bg-gray-200 block w-auto min-w-full p-1 border-b border-b-gray-300 hover:bg-gray-400 last-of-type:border-0'
-                            >
-                                {word}
-                            </button>
-                        )}
-                    </div>
-                )
-                : null}
-        </div>
-    );
-};
-
+const SelectLanguage: FC<{ onChange: (event) => void }> = ({onChange}) =>
+    <div className="my-4">
+        <label
+            htmlFor="countries"
+            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+        >Select a Language</label>
+        <select
+            onChange={onChange}
+            defaultValue="en_UK"
+            id="countries"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+        >
+            <option value="en_UK">English (UK)</option>
+            <option value="en_US">English (American)</option>
+            <option value="de">German</option>
+            <option value="fr_FR">French</option>
+            <option value="es_ES">Spanish</option>
+            <option value="sv">Swedish</option>
+            <option value="it">Italian</option>
+            <option value="da">Danish</option>
+            <option value="fi">Finnish</option>
+            <option value="hu">Hungarian</option>
+            <option value="is">Icelandic</option>
+            <option value="el">Greek</option>
+            <option value="ru">Russian</option>
+            <option value="yi">Yiddish</option>
+            <option value="la">Latin</option>
+        </select>
+    </div>;
 
 const Home = () => {
     let timer;
@@ -68,7 +49,7 @@ const Home = () => {
     });
 
     const mutation = useMutation({
-        mutationFn: (translation: string[][]) => getTranslationWithMlReplacements(translation),
+        mutationFn: (translation: Transliteration) => getTranslationWithMlReplacements(languageCode, translation),
     })
 
     const handleInput = (event) => {
@@ -84,7 +65,12 @@ const Home = () => {
     };
 
     useEffect(() => {
-        if (languageCode !== 'en_UK' || !data.translation || !data.translation.length) return;
+        console.log('LANG FOUND', ["de", "en_UK", "fr_FR", "is", "ru", "sv", "yi"].includes(languageCode))
+        if (
+            !["de", "en_UK", "fr_FR", "is", "ru", "sv", "yi"].includes(languageCode) ||
+            !data.translation ||
+            !data.translation.length
+        ) return;
         mutation.mutate(data.translation);
     }, [data, languageCode]);
 
@@ -100,34 +86,7 @@ const Home = () => {
             </Head>
             <main className="px-20 py-10 max-w-[80ch]">
                 <h1 className='text-2xl'>Phonetic Translator</h1>
-                <div className="my-4">
-                    <label
-                        htmlFor="countries"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                    >Select a Language</label>
-                    <select
-                        onChange={handleSelect}
-                        defaultValue='en_UK'
-                        id="countries"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                    >
-                        <option value="en_UK">English (UK)</option>
-                        <option value="en_US">English (American)</option>
-                        <option value="de">German</option>
-                        <option value="fr_FR">French</option>
-                        <option value="es_ES">Spanish</option>
-                        <option value="sv">Swedish</option>
-                        <option value="it">Italian</option>
-                        <option value="da">Danish</option>
-                        <option value="fi">Finnish</option>
-                        <option value="hu">Hungarian</option>
-                        <option value="is">Icelandic</option>
-                        <option value="el">Greek</option>
-                        <option value="ru">Russian</option>
-                        <option value="yi">Yiddish</option>
-                        <option value="la">Latin</option>
-                    </select>
-                </div>
+                <SelectLanguage onChange={handleSelect}/>
                 <div className="my-4">
                     <label
                         htmlFor="input"
@@ -141,56 +100,38 @@ const Home = () => {
                     />
                 </div>
                 <div className="my-4">
-                    <>
-                        <label
-                            className="block mb-2 text-sm font-medium text-gray-900"
-                        >Output</label>
-                        <div
-                            className="min-h-[260px] block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 outline-none focus:outline-none"
-                        >
-                            {isSuccess ? (data?.translation).map(
-                                (wordSet, i) => {
-                                    const lastWord = wordSet.at(-1);
-                                    const isNonMatched = lastWord[0] === '#' && lastWord.at(-1) === '#';
-                                    const isAiTransliteration = isNonMatched && wordSet.length > 1;
-                                    const colour = isAiTransliteration
-                                        ? 'text-green-600'
-                                        : isNonMatched
-                                            ? 'text-red-600'
-                                            : wordSet.length > 1
-                                                ? 'text-blue-600'
-                                                : '';
-                                    return (wordSet.length === 1
-                                            ? <span key={`w_${i}`} className={colour}>{wordSet}</span>
-                                            : <SelectWord
-                                                key={`w_${i}`}
-                                                wordId={`w_${i}`}
-                                                wordSet={wordSet}
-                                                colour={colour}
-                                            />
-                                    );
-                                }) : null}
-                        </div>
-                    </>
+                    <label className="block mb-2 text-sm font-medium text-gray-900">
+                        Output
+                    </label>
+                    <div
+                        className="min-h-[260px] block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 outline-none focus:outline-none"
+                    >
+                        {isSuccess ? (data?.translation).map(
+                            (transliteration, i) => {
+                                const isRule = transliteration.type === 'rule';
+                                const isLookup = transliteration.type === 'lookup';
+                                const isChar = transliteration.type === 'char';
+                                const colour = isRule && transliteration.phonetics.length > 1
+                                    ? 'text-green-600'
+                                    : isRule
+                                        ? 'text-red-600'
+                                        : isLookup && transliteration.phonetics.length > 1
+                                            ? 'text-blue-600'
+                                            : '';
+                                return isChar ? <>{transliteration.char}</> : (
+                                    transliteration.phonetics.length === 1
+                                        ? <span key={`w_${i}`} className={colour}>{transliteration.phonetics[0]}</span>
+                                        : <SelectWord
+                                            key={`w_${i}`}
+                                            wordId={`w_${i}`}
+                                            phonetics={transliteration}
+                                            colour={colour}
+                                        />
+                                );
+                            }) : null}
+                    </div>
                 </div>
-                <div className={'my-10'}>
-                    <h3 className='font-bold'>Key</h3>
-                    <ul>
-                        <li>
-                            <span className='text-blue-400'>Blue</span> highlighted text has alternate pronunciations,
-                            click on the text to view and select them.
-                        </li>
-                        <li>
-                            <span className='text-red-400'>Red</span> highlighted text has no dictionary look up and may
-                            have been transliterated using phoneme rules, provided such rules are available for the
-                            particular language.
-                        </li>
-                        <li>
-                            <span className='text-green-400'>Green</span> highlighted text has no dictionary look up and
-                            has used a machine learning model to generate the transliteration, results may vary.
-                        </li>
-                    </ul>
-                </div>
+                <TransliteratorKey/>
             </main>
             <Footer/>
         </div>
