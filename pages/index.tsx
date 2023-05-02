@@ -67,7 +67,7 @@ const Home = () => {
     useEffect(() => {
         console.log('LANG FOUND', ["de", "en_UK", "fr_FR", "is", "ru", "sv", "yi"].includes(languageCode))
         if (
-            !["de", "en_UK", "fr_FR", "is", "ru", "sv", "yi"].includes(languageCode) ||
+            !["de", "en_UK"].includes(languageCode) ||
             !data.translation ||
             !data.translation.length
         ) return;
