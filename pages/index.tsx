@@ -111,7 +111,8 @@ const Home = () => {
                         id="countries"
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                     >
-                        <option value="en_UK">English</option>
+                        <option value="en_UK">English (UK)</option>
+                        <option value="en_US">English (American)</option>
                         <option value="de">German</option>
                         <option value="fr_FR">French</option>
                         <option value="es_ES">Spanish</option>
