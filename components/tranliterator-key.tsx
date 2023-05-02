@@ -13,7 +13,7 @@ const TransliteratorKey = () =>
             </li>
             <li>
                 <span className='text-green-400'>Green</span> highlighted text has no dictionary look up and
-                has used a machine learning model to generate the transliteration, results may vary. An alternative
+                has used a machine learning model to generate the transliteration, quality of results will vary. An alternative
                 transliteration created using phoneme rules may be available if the language supports them.
             </li>
         </ul>
