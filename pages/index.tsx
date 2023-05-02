@@ -35,7 +35,7 @@ const SelectWord: FC<{ wordSet: string[], wordId: string, colour: string }> = (
     return (
         <div className='inline relative' ref={ref}>
             <button onClick={toggleWordChoices}
-                    className={colour}>{wordSet[selectedWordIndex]}</button>
+                    className={`${colour} font-bold`}>{wordSet[selectedWordIndex]}</button>
             {showWordChoices
                 ? (
                     <div className='absolute w-auto top-5 left-0 bg-gray-200 shadow z-10'>
