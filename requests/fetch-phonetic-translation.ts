@@ -27,6 +27,7 @@ const fetchPhoneticTranslation = async (signal: AbortSignal, languageCode: strin
     const data = response.data;
     if (!data.translation.length || !["de", "en_UK", "fr_FR"].includes(languageCode))
         return data;
+
     return await getTranslationWithMlReplacements(signal, languageCode, data.translation)
 }
 

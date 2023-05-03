@@ -24,6 +24,7 @@ const getTranslationWithMlReplacements = async (signal: AbortSignal, languageCod
         console.log('Error')
         // Todo: display error
         console.error(e);
+        return {translation}
     }
 };
 
