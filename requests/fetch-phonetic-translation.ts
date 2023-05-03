@@ -25,16 +25,7 @@ const fetchPhoneticTranslation = async (signal: AbortSignal, languageCode: strin
         {signal}
     );
 
-    // Todo: handle errors
-    const data = response.data;
-    if (!data.translation.length || !["de", "en_UK", "fr_FR"].includes(languageCode))
-        return data;
-
-    try {
-        return await getTranslationWithMlReplacements(signal, languageCode, data.translation)
-    } catch(e) {
-        return data
-    }
+    return response.data
 }
 
 export default fetchPhoneticTranslation;

@@ -44,7 +44,7 @@ const Home = () => {
 
     const {data, isError, error, isSuccess} = useQuery({
         queryKey: ['translation', text, languageCode],
-        queryFn: ({signal}) => fetchPhoneticTranslation(signal, languageCode, text),
+        queryFn: ({signal}) => getTranslationWithMlReplacements(signal, languageCode, text),
         initialData: {translation: []}
     });
 

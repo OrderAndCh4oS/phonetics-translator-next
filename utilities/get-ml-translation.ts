@@ -1,32 +1,35 @@
 import fetchPhoneticTranslationMl from "../requests/fetch-phonetic-translation-ml";
-import {Transliteration} from "../requests/fetch-phonetic-translation";
+import fetchPhoneticTranslation, {Transliteration} from "../requests/fetch-phonetic-translation";
 
-const getTranslationWithMlReplacements = async (signal: AbortSignal, languageCode: string, translation: Transliteration) => {
-    const text = translation.reduce((arr, x) => {
+const getTranslationWithMlReplacements = async (signal: AbortSignal, languageCode: string, text: string): Promise<{
+    translation: Transliteration
+}> => {
+    const lookUpRes = await fetchPhoneticTranslation(signal, languageCode, text)
+    if (!lookUpRes?.translation.length) return lookUpRes;
+
+    const unmatchedText = lookUpRes.translation.reduce((arr, x) => {
         return x.type === 'rule' ? [...arr, x.word] : arr
     }, []).join(' ')
 
-    if(!text.length) return {translation}
+    if (!unmatchedText.length) return lookUpRes
 
     try {
-        const res = await fetchPhoneticTranslationMl(signal, languageCode, text)
-        const ipaArr = res.ipa.split(' ');
-        if (res) {
+        const mlRes = await fetchPhoneticTranslationMl(signal, languageCode, unmatchedText);
+        const ipaArr = mlRes.ipa.split(' ');
+        if (mlRes) {
             let i = 0;
-            for (const x of translation) {
-                if(x.type === 'rule') {
+            for (const x of lookUpRes.translation) {
+                if (x.type === 'rule') {
                     x.phonetics.unshift(ipaArr[i]);
                     i++;
                 }
             }
         }
-
-        return {translation};
-    } catch (e) {
-        console.log('Error')
-        // Todo: display error
+    } catch(e) {
         console.error(e);
     }
+
+    return lookUpRes;
 };
 
 export default getTranslationWithMlReplacements;
