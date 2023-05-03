@@ -21,8 +21,8 @@ const TransliteratorKey = () =>
                 particular language, otherwise the original word will be shown.
             </li>
         </ul>
-        <p>Note: The machine learning model runs on AWS Lambda, the cold start can take ~20 seconds to kick in after the
-            first request.</p>
+        <p>Note: The machine learning models run on AWS Lambda, due to cold starts and the time required to load the
+            models the first request to any language may have a slight delay. Subsequent requests should be snappy.</p>
     </div>
 
 export default TransliteratorKey;

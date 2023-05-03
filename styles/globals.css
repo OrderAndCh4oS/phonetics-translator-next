@@ -68,3 +68,62 @@ html, body, #__next {
         outline: 1px #05d7d7 solid;
     }
 }
+
+.spinner_DupU {
+    animation: spinner_sM3D 1.2s infinite
+}
+
+.spinner_GWtZ {
+    animation-delay: .1s
+}
+
+.spinner_dwN6 {
+    animation-delay: .2s
+}
+
+.spinner_46QP {
+    animation-delay: .3s
+}
+
+.spinner_PD82 {
+    animation-delay: .4s
+}
+
+.spinner_eUgh {
+    animation-delay: .5s
+}
+
+.spinner_eUaP {
+    animation-delay: .6s
+}
+
+.spinner_j38H {
+    animation-delay: .7s
+}
+
+.spinner_tVmX {
+    animation-delay: .8s
+}
+
+.spinner_DQhX {
+    animation-delay: .9s
+}
+
+.spinner_GIL4 {
+    animation-delay: 1s
+}
+
+.spinner_n0Yb {
+    animation-delay: 1.1s
+}
+
+@keyframes spinner_sM3D {
+    0%, 50% {
+        animation-timing-function: cubic-bezier(0, 1, 0, 1);
+        r: 0
+    }
+    10% {
+        animation-timing-function: cubic-bezier(.53, 0, .61, .73);
+        r: 2px
+    }
+}

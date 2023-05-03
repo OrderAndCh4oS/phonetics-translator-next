@@ -5,7 +5,15 @@ const getTranslationWithMlReplacements = async (signal: AbortSignal, languageCod
     translation: Transliteration
 }> => {
     const lookUpRes = await fetchPhoneticTranslation(signal, languageCode, text)
-    if (!lookUpRes?.translation.length) return lookUpRes;
+    if (
+        !lookUpRes?.translation.length ||
+        ![
+            "cz", "da", "de", "el",
+            "en_UK", "en_US", "es_ES",
+            "fi", "fr", "hu", "is",
+            "it", "la", "ru", "sv"
+        ].includes(languageCode)
+    ) return lookUpRes;
 
     const unmatchedText = lookUpRes.translation.reduce((arr, x) => {
         return x.type === 'rule' ? [...arr, x.word] : arr
@@ -25,7 +33,7 @@ const getTranslationWithMlReplacements = async (signal: AbortSignal, languageCod
                 }
             }
         }
-    } catch(e) {
+    } catch (e) {
         console.error(e);
     }
 

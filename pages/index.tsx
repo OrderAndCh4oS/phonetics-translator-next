@@ -5,12 +5,13 @@ import React, {FC, useState} from 'react';
 import getTranslationWithMlReplacements from "../utilities/get-ml-translation";
 import TransliteratorKey from "../components/tranliterator-key";
 import SelectWord from "../components/select-word";
+import ProcessingSpinner from "../spinners/processing-spinner";
 
 const SelectLanguage: FC<{ onChange: (event) => void }> = ({onChange}) =>
     <div className="my-4">
         <label
             htmlFor="countries"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            className="block mb-2 text-sm font-medium text-gray-300"
         >Select a Language</label>
         <select
             onChange={onChange}
@@ -41,7 +42,7 @@ const Home = () => {
     const [text, setText] = useState('');
     const [languageCode, setLanguageCode] = useState('en_UK');
 
-    const {data, isError, error, isSuccess} = useQuery({
+    const {data, isLoading, isFetching, isError, error, isSuccess} = useQuery({
         queryKey: ['translation', text, languageCode],
         queryFn: ({signal}) => getTranslationWithMlReplacements(signal, languageCode, text),
         initialData: {translation: []}
@@ -75,7 +76,7 @@ const Home = () => {
                 <div className="my-4">
                     <label
                         htmlFor="input"
-                        className="block mb-2 text-sm font-medium text-gray-900"
+                        className="block mb-2 text-sm font-medium text-gray-300"
                     >Input</label>
                     <textarea
                         id="input"
@@ -85,8 +86,8 @@ const Home = () => {
                     />
                 </div>
                 <div className="my-4">
-                    <label className="block mb-2 text-sm font-medium text-gray-900">
-                        Output
+                    <label className="flex align-middle justify-between mb-2 text-sm font-medium text-gray-300 w-full">
+                        Output {isFetching ? <ProcessingSpinner /> : null}
                     </label>
                     <div
                         className="min-h-[260px] block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 outline-none focus:outline-none"
