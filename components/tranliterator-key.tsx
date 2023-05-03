@@ -1,7 +1,7 @@
 const TransliteratorKey = () =>
     <div className={'my-10'}>
         <h3 className='font-bold'>Key</h3>
-        <ul className={'list-disc'}>
+        <ul className={'list-disc mb-4'}>
             <li>
                 Non-highlighted text is a straight look up from an IPA dictionary for the chosen language
             </li>
@@ -21,6 +21,7 @@ const TransliteratorKey = () =>
                 particular language, otherwise the original word will be shown.
             </li>
         </ul>
+        <p>Note: The machine learning model runs on AWS Lambda, the cold start can take ~20 seconds to kick in after the first request.</p>
     </div>
 
 export default TransliteratorKey;
