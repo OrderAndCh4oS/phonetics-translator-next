@@ -6,6 +6,8 @@ const getTranslationWithMlReplacements = async (signal: AbortSignal, languageCod
         return x.type === 'rule' ? [...arr, x.word] : arr
     }, []).join(' ')
 
+    if(!text.length) return {translation}
+
     try {
         const res = await fetchPhoneticTranslationMl(signal, languageCode, text)
         const ipaArr = res.ipa.split(' ');
@@ -24,7 +26,6 @@ const getTranslationWithMlReplacements = async (signal: AbortSignal, languageCod
         console.log('Error')
         // Todo: display error
         console.error(e);
-        return {translation}
     }
 };
 

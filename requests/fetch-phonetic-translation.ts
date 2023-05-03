@@ -18,17 +18,23 @@ const fetchPhoneticTranslation = async (signal: AbortSignal, languageCode: strin
     translation: Transliteration
 }> => {
     if (!text.length) return {translation: []};
+
     const response = await axios.post(
         '/api/phonetic-translator',
         {languageCode, text},
         {signal}
     );
+
     // Todo: handle errors
     const data = response.data;
     if (!data.translation.length || !["de", "en_UK", "fr_FR"].includes(languageCode))
         return data;
 
-    return await getTranslationWithMlReplacements(signal, languageCode, data.translation)
+    try {
+        return await getTranslationWithMlReplacements(signal, languageCode, data.translation)
+    } catch(e) {
+        return data
+    }
 }
 
 export default fetchPhoneticTranslation;
