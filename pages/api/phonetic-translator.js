@@ -6,7 +6,7 @@ function loadFile(file) {
         const dataDirectory = join(process.cwd(), 'data');
         let response = readFileSync(`${dataDirectory}/${file}`, {encoding: 'utf-8'});
         return response ? response : null;
-    } catch(e) {
+    } catch (e) {
         console.log(e);
         return null;
     }
@@ -14,19 +14,21 @@ function loadFile(file) {
 
 class BaseNode {
     _phonetics = new Set();
-    _word = null;
-    _type = 'rule';
-
-    get type() {
-        return this._type;
-    }
 
     get phonetics() {
         return this._phonetics;
     }
 
+    _word = null;
+
     get word() {
         return this._word;
+    }
+
+    _type = 'rule';
+
+    get type() {
+        return this._type;
     }
 
     addPhonetic(phonetic) {
@@ -39,8 +41,6 @@ class BaseNode {
 }
 
 class LookUpNode extends BaseNode {
-    _char;
-    _nextLevel = {};
     _type = 'lookup';
 
     constructor(char) {
@@ -48,9 +48,13 @@ class LookUpNode extends BaseNode {
         this._char = char;
     }
 
+    _char;
+
     get char() {
         return this._char;
     }
+
+    _nextLevel = {};
 
     get nextLevel() {
         return this._nextLevel;
@@ -61,7 +65,8 @@ class Trie {
     _currentLanguageCode = null;
     _loadedDictionaries = {};
 
-    constructor() { }
+    constructor() {
+    }
 
     get firstLevel() {
         return this._loadedDictionaries[this._currentLanguageCode];
@@ -74,7 +79,7 @@ class Trie {
         let currentChar;
         do {
             currentChar = charsArr.shift();
-            if(currentChar in currentLevel) {
+            if (currentChar in currentLevel) {
                 currentNode = currentLevel[currentChar];
                 currentLevel = currentLevel[currentChar].nextLevel;
                 continue;
@@ -82,9 +87,9 @@ class Trie {
             currentLevel[currentChar] = new LookUpNode(currentChar);
             currentNode = currentLevel[currentChar];
             currentLevel = currentLevel[currentChar].nextLevel;
-        } while(charsArr.length);
+        } while (charsArr.length);
         const phoneticOptions = phonetic.split(', ');
-        for(const phoneticOption of phoneticOptions) {
+        for (const phoneticOption of phoneticOptions) {
             currentNode.addPhonetic(phoneticOption);
         }
         currentNode.setWord(word);
@@ -101,17 +106,18 @@ class TrieStepperAbstract extends Trie {
     _foundChars = false;
     _lastResultCursor = null;
     _currentNode = null;
-    _cursor = 0;
-    _result = [];
-    _text = null;
 
     constructor() {
         super();
     }
 
+    _cursor = 0;
+
     get cursor() {
         return this._cursor;
     }
+
+    _result = [];
 
     get result() {
         return this._result.map(r =>
@@ -121,13 +127,15 @@ class TrieStepperAbstract extends Trie {
         );
     }
 
+    _text = null;
+
     set text(text) {
         // Todo: remove need for extra spaces;
         this._text = typeof text === 'string' ? ' ' + text.toLowerCase() + ' ' : null;
     }
 
     translateText(text) {
-        if(typeof text !== 'string') throw new Error('Text must be a string');
+        if (typeof text !== 'string') throw new Error('Text must be a string');
         this._text = ' ' + text.toLowerCase() + ' '; // Todo: remove need for spaces;
         this.run();
         return this.result;
@@ -150,7 +158,9 @@ class TrieStepperAbstract extends Trie {
         this._foundChars = false;
     }
 
-    isLetter(str) { return /\p{L}/u.test(str); }
+    isLetter(str) {
+        return /\p{L}/u.test(str);
+    }
 }
 
 class TrieWordStepper extends TrieStepperAbstract {
@@ -162,36 +172,36 @@ class TrieWordStepper extends TrieStepperAbstract {
     }
 
     run() {
-        if(typeof this._text !== 'string') throw new Error('Set some text before running');
+        if (typeof this._text !== 'string') throw new Error('Set some text before running');
         this._currentLevel = this.firstLevel;
-        while(this._cursor < this._text.length) {
+        while (this._cursor < this._text.length) {
             const char = this._text[this._cursor];
-            if(char in this._currentLevel &&
+            if (char in this._currentLevel &&
                 (this._foundChars || !this.isLetter(this._text[this._cursor - 1]))) {
                 this._foundChars = true;
                 this._currentNode = this._currentLevel[char];
                 this._currentLevel = this._currentNode.nextLevel;
-                if(this._currentNode.word && !this.isLetter(this._text[this._cursor + 1])) {
+                if (this._currentNode.word && !this.isLetter(this._text[this._cursor + 1])) {
                     this._lastNodeWithResult = this._currentNode;
                     this._lastResultCursor = this._cursor;
                 }
                 this._cursor++;
-            } else if(this._lastNodeWithResult) {
+            } else if (this._lastNodeWithResult) {
                 this._result.push(this._lastNodeWithResult);
                 this._cursor = this._lastResultCursor + 1;
                 this._lastAddedCursor = this._cursor;
                 this.reset();
             } else {
-                for(let i = this._lastAddedCursor; i <= this._cursor; i++) {
+                for (let i = this._lastAddedCursor; i <= this._cursor; i++) {
                     const char = this._text[i];
-                    if(!this.isLetter(char)) {
+                    if (!this.isLetter(char)) {
                         this._result.push(char);
                         continue;
                     }
                     this._currentWord += char;
-                    if(!this.isLetter(this._text[i + 1])) {
+                    if (!this.isLetter(this._text[i + 1])) {
                         let phonetic = '';
-                        if(this._orthographyStepper) {
+                        if (this._orthographyStepper) {
                             phonetic = this._orthographyStepper
                                 .translateText(this._currentWord);
                             this._orthographyStepper.clear();
@@ -212,13 +222,13 @@ class TrieWordStepper extends TrieStepperAbstract {
 
     loadDictionary(dictionary) {
         this._currentLanguageCode = dictionary;
-        if(this.hasDictionary(dictionary)) return;
+        if (this.hasDictionary(dictionary)) return;
         this._loadedDictionaries[dictionary] = {};
         const response = loadFile(`./combined-dictionaries/${dictionary}.txt`);
         const lines = response.split(/\r?\n/);
-        for(const line of lines) {
+        for (const line of lines) {
             const [word, phonetic] = line.split(/\t/);
-            if(!(word && phonetic)) continue;
+            if (!(word && phonetic)) continue;
             this.addWord(word.toLowerCase(), phonetic);
         }
     }
@@ -238,7 +248,7 @@ class TrieOrthographyStepper extends TrieStepperAbstract {
                 ? [...r.phonetics][0]
                 : r,
         ).join('');
-        if(this._currentLanguageCode in this._rulePreprocessors) {
+        if (this._currentLanguageCode in this._rulePreprocessors) {
             result = this._rulePostprocessors[this._currentLanguageCode].process(result);
         }
         return result;
@@ -257,28 +267,28 @@ class TrieOrthographyStepper extends TrieStepperAbstract {
     }
 
     run() {
-        if(typeof this._text !== 'string') throw new Error('Set some text before running');
-        if(this._currentLanguageCode in this._rulePreprocessors) {
+        if (typeof this._text !== 'string') throw new Error('Set some text before running');
+        if (this._currentLanguageCode in this._rulePreprocessors) {
             this._text = this._rulePreprocessors[this._currentLanguageCode].process(this._text);
         }
         this._currentLevel = this.firstLevel;
-        while(this._cursor < this._text.length) {
+        while (this._cursor < this._text.length) {
             const char = this._text[this._cursor];
-            if(char in this._currentLevel) {
+            if (char in this._currentLevel) {
                 this._currentNode = this._currentLevel[char];
                 this._currentLevel = this._currentNode.nextLevel;
-                if(this._currentNode.word) {
+                if (this._currentNode.word) {
                     this._lastNodeWithResult = this._currentNode;
                     this._lastResultCursor = this._cursor;
                 }
                 this._cursor++;
-            } else if(this._lastNodeWithResult) {
+            } else if (this._lastNodeWithResult) {
                 this._result.push(this._lastNodeWithResult);
                 this._cursor = this._lastResultCursor + 1;
                 this._lastAddedCursor = this._cursor;
                 this.reset();
             } else {
-                for(let i = this._lastAddedCursor || 0; i <= this._cursor; i++) {
+                for (let i = this._lastAddedCursor || 0; i <= this._cursor; i++) {
                     this._result.push(this._text[i]);
                 }
                 this._lastAddedCursor = this._cursor + 1;
@@ -290,13 +300,13 @@ class TrieOrthographyStepper extends TrieStepperAbstract {
 
     loadDictionary(dictionary) {
         this._currentLanguageCode = dictionary;
-        if(this.hasDictionary(dictionary)) return;
+        if (this.hasDictionary(dictionary)) return;
         this._loadedDictionaries[dictionary] = {};
         const response = loadFile(`./processors/maps/${dictionary}.txt`);
         const lines = response ? response.split(/\r?\n/) : [];
-        for(const line of lines) {
+        for (const line of lines) {
             const [word, phonetic] = line.split(/\t/);
-            if(!(word && phonetic)) continue;
+            if (!(word && phonetic)) continue;
             this.addWord(word.toLowerCase(), phonetic);
         }
     }
@@ -312,7 +322,7 @@ class Rule {
         const [strings, match] = rule.split(/\s+\/\s+/u);
         [this._toReplace, this._replacement] = strings.split(/\s+->\s+/u);
         [this._prefix, this._suffix] = match.split(/\s?_\s?/u);
-        for(const [key, value] of Object.entries(charGroups)) {
+        for (const [key, value] of Object.entries(charGroups)) {
             const charGroupRegex = new RegExp(key, 'gu');
             this._prefix = this._prefix ? this._prefix.replace(charGroupRegex, value)
                 .replace(/#/u, '^') : '';
@@ -336,7 +346,7 @@ class RuleProcessor {
 
     loadRuleFile(languageCode, type) {
         const response = loadFile(`processors/rules/${type}s/${languageCode}.txt`);
-        if(!response) return;
+        if (!response) return;
         const charGroupRegex = /^::\p{L}+?::\s+?=\s+?[\p{L}|]+/gmu;
         const ruleRegex = /^[\p{L}\[\]|]+?\s+->\s+[\p{L}\p{M}\[\]<>|0]+\s+\/\s+.*?$/gmu;
         const foundCharGroups = response.match(charGroupRegex);
@@ -353,7 +363,7 @@ class RuleProcessor {
     }
 
     process(word) {
-        if(!this._rules.length) return word;
+        if (!this._rules.length) return word;
         return this._rules.reduce((w, r) => r.apply(w), word);
     }
 }
@@ -378,12 +388,12 @@ export default async function handler(req, res) {
         return;
     }
     const errors = [];
-    if(!req.body.languageCode) errors.push({languageCode: 'Missing field'});
+    if (!req.body.languageCode) errors.push({languageCode: 'Missing field'});
     // Todo: ensure languageCode is valid.
 
-    if(!req.body.text) errors.push({text: 'Missing field'});
-    if(errors.length) return res.status(400).json(errors);
-    if(!req.body.text.length) return res.status(200).json({transliteration: []});
+    if (!req.body.text) errors.push({text: 'Missing field'});
+    if (errors.length) return res.status(400).json(errors);
+    if (!req.body.text.length) return res.status(200).json({transliteration: []});
 
     const translation = translate(req.body.languageCode, req.body.text);
 

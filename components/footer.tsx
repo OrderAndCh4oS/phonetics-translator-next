@@ -23,12 +23,15 @@ const Footer = () =>
         <p>
             <GitHubIcon/>
             {' '}
-            <a className='hover:underline' href='https://github.com/OrderAndCh4oS/phonetics-transliterator'>International Phonetic Alphabet (IPA) Transliterator</a>
+            <a className='hover:underline' href='https://github.com/OrderAndCh4oS/phonetics-transliterator'>International
+                Phonetic Alphabet (IPA) Transliterator</a>
         </p>
         <p className='pb-4'>
             <GitHubIcon/>
             {' '}
-            <a className='hover:underline' href='https://github.com/OrderAndCh4oS/phonetic-transliteration-ml-seq2seq-attention'>Sequence to Sequence English to IPA Phonetics Model</a>
+            <a className='hover:underline'
+               href='https://github.com/OrderAndCh4oS/phonetic-transliteration-ml-seq2seq-attention'>Sequence to
+                Sequence English to IPA Phonetics Model</a>
         </p>
         <p className='pb-4'>
             By <a className='hover:underline' href="https://orderandchaos.xyz">orderandchaos</a><br/>

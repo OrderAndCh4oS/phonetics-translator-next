@@ -36,27 +36,34 @@ html, body, #__next {
         background: linear-gradient(33deg, #181c1c, #1b252c);;
         color: #d2d7cc
     }
+
     input, textarea {
         background-color: #d2d7cc;
         color: #171414;
     }
+
     input.border, textarea.border {
         border: 2px solid #d2d7cc;
     }
+
     input:focus, textarea:focus, button:focus {
         outline: 1px #05d7d7 solid;
     }
+
     input.border:focus, textarea.border:focus, button.border:focus {
         outline: 0;
         border: 2px solid #05d7d7;
     }
+
     button.border {
         border: 2px solid #d2d7cc;
     }
+
     button.border:hover {
         background-color: #1b252c;
         border: 2px solid #05d7d7;
     }
+
     button:focus {
         outline: 1px #05d7d7 solid;
     }

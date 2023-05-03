@@ -1,6 +1,6 @@
 import React, {FC, useRef, useState} from "react";
 import useOnClickOutside from "../hooks/use-on-click-outside";
-import {Phonetics, Transliteration} from "../requests/fetch-phonetic-translation";
+import {Phonetics} from "../requests/fetch-phonetic-translation";
 
 const SelectWord: FC<{ phonetics: Phonetics, wordId: string, colour: string }> = (
     {

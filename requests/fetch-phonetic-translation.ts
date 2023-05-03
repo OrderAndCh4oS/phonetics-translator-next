@@ -1,5 +1,4 @@
 import axios from 'axios';
-import getTranslationWithMlReplacements from "../utilities/get-ml-translation";
 
 export type Phonetics = {
     phonetics: string[]

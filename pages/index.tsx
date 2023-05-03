@@ -1,8 +1,7 @@
 import Head from 'next/head';
-import {useMutation, useQuery} from '@tanstack/react-query';
+import {useQuery} from '@tanstack/react-query';
 import Footer from '../components/footer';
-import React, {FC, useEffect, useState} from 'react';
-import fetchPhoneticTranslation, {Transliteration} from '../requests/fetch-phonetic-translation';
+import React, {FC, useState} from 'react';
 import getTranslationWithMlReplacements from "../utilities/get-ml-translation";
 import TransliteratorKey from "../components/tranliterator-key";
 import SelectWord from "../components/select-word";
