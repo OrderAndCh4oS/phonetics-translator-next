@@ -1,5 +1,5 @@
 const ProcessingSpinner = () =>
-    <svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <circle className="spinner_DupU" cx="12" cy="3" r="0" fill="currentColor"/>
         <circle className="spinner_DupU spinner_GWtZ" cx="16.50" cy="4.21" r="0" fill="currentColor"/>
         <circle className="spinner_DupU spinner_n0Yb" cx="7.50" cy="4.21" r="0" fill="currentColor"/>
